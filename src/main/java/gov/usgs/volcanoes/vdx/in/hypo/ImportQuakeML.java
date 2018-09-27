@@ -259,6 +259,11 @@ public class ImportQuakeML implements Importer {
 
     int result;
     for (Event e : eventSet.values()) {
+      // Magnitude
+      Magnitude m = e.getPreferredMagnitude();
+      if(m == null){
+        continue;    // preferred magnitude required
+      }
       // Origin
       Origin o = e.getPreferredOrigin();
       if(o == null){
@@ -267,23 +272,15 @@ public class ImportQuakeML implements Importer {
       long time = o.getTime();
       double latitude = o.getLatitude();
       double longitude = o.getLongitude();
-      double depth = o.getDepth();
-      // Magnitude
-      Magnitude m = e.getPreferredMagnitude();
-      double magnitude=Double.NaN;
-      if(m != null){
-        magnitude = m.getMagnitude().getValue();
-      }
+      double depth = o.getDepth()/1000; // needs to be in km
       // Hypocenter
-      Hypocenter hc = new Hypocenter(J2kSec.fromEpoch(time), rid, latitude, longitude, depth, magnitude);
+      Hypocenter hc = new Hypocenter(J2kSec.fromEpoch(time), rid, latitude, longitude, depth, m.getMagnitude().getValue());
       hc.eid=e.getEventId();
-      //if(m != null){
-      //  hc.magtype=m.getType();
-      //}
       hc.azgap=(int) o.getQuality().getAzimuthalGap();
-      hc.nphases=o.getQuality().getAssociatedPhaseCount();
+      hc.nphases=o.getQuality().getUsedPhaseCount();
       hc.rms=o.getQuality().getStandardError();
       hc.dmin=o.getQuality().getMinimumDistance();
+      hc.magtype=(m.getType()==null?null:m.getType().substring(1,1).toUpperCase());
       result = sqlDataSource.insertHypocenter(hc);
       LOGGER.info("{}:{}", result, hc.toString());
     }    
