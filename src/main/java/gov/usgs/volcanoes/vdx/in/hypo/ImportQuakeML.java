@@ -139,7 +139,7 @@ public class ImportQuakeML implements Importer {
   public void initialize(String importerClass, String configFile, boolean verbose) {
 
     // initialize the logger for this importer
-    LOGGER.info("ImportHypoInverse.initialize() succeeded.");
+    LOGGER.info("ImportQuakeML.initialize() succeeded.");
 
     // process the config file
     processConfigFile(configFile);
@@ -230,7 +230,7 @@ public class ImportQuakeML implements Importer {
   }
 
   /**
-   * Parse hypoinverse file from url (resource locator or file name).
+   * Parse QuakeML file from url (resource locator or file name).
    */
   public void process(String resource) {
 
